@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/splash_logo"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tentang Aplikasi"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:layout_marginBottom="24dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Aplikasi Latihan Pertemuan 5-9"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Aplikasi ini menggabungkan berbagai materi pembelajaran Android:"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📱 Pertemuan 5: Activity, Intent, dan Fragment"
+            android:textSize="14sp"
+            android:textColor="#000000"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📐 Pertemuan 6: Hitung Luas Persegi Panjang"
+            android:textSize="14sp"
+            android:textColor="#000000"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🌙 Pertemuan 7: Dark Mode dengan Shared Preferences"
+            android:textSize="14sp"
+            android:textColor="#000000"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="💾 Pertemuan 8: SQLite Database (CRUD Mahasiswa)"
+            android:textSize="14sp"
+            android:textColor="#000000"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🌤️ Pertemuan 9: Retrofit API &amp; Splash Screen"
+            android:textSize="14sp"
+            android:textColor="#000000"
+            android:layout_marginBottom="24dp"/>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fitur Aplikasi:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="✓ Splash Screen dengan pengecekan login\n✓ Login/Logout dengan SharedPreferences\n✓ Dark Mode\n✓ Kalkulator Luas Persegi Panjang\n✓ Data Cuaca dari API\n✓ Database Mahasiswa (SQLite)\n✓ Bottom Navigation"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:lineSpacingExtra="4dp"
+            android:layout_marginBottom="24dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dibuat oleh: Adji Dwi\nMata Kuliah: Pemrograman Aplikasi Perangkat Bergerak"
+            android:textSize="12sp"
+            android:textColor="#999999"
+            android:gravity="center"
+            android:layout_marginBottom="24dp"/>
+
+    </LinearLayout>
+
+</ScrollView>

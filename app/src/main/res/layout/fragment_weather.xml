@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Data Cuaca"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="24dp"/>
+
+        <TextView
+            android:id="@+id/text_view_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lokasi: -"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/text_view_temperature"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Suhu: -"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/text_view_humidity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Kelembaban: -"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/text_view_wind_speed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Kecepatan Angin: -"
+            android:textSize="16sp"
+            android:layout_marginBottom="24dp"/>
+
+        <Button
+            android:id="@+id/button_get_weather"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ambil Data Cuaca"
+            android:layout_marginBottom="16dp"/>
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
+</ScrollView>
