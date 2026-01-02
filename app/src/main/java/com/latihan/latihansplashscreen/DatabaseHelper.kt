@@ -16,35 +16,49 @@ class DatabaseHelper(context: Context) :
     
     companion object {
         private const val DATABASE_NAME = "mahasiswa.db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 2
         private const val TABLE_MAHASISWA = "mahasiswa"
         private const val COLUMN_NIM = "nim"
         private const val COLUMN_NAMA = "nama"
     }
     
-    override fun onCreate(db: SQLiteDatabase?) {
-        val createTable = """
-            CREATE TABLE $TABLE_MAHASISWA (
-                $COLUMN_NIM TEXT PRIMARY KEY,
-                $COLUMN_NAMA TEXT
-            )
-        """.trimIndent()
-        db?.execSQL(createTable)
+    override fun onCreate(db: SQLiteDatabase) {
+        val createTableMahasiswa = ("CREATE TABLE " + TABLE_MAHASISWA + "("
+                + COLUMN_NIM + " TEXT PRIMARY KEY," + COLUMN_NAMA + " TEXT" + ")")
+        db.execSQL(createTableMahasiswa)
+        
+        // Buat tabel pesanan tiket
+        val createTableTiket = ("CREATE TABLE pesanan_tiket ("
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "nama_pemesan TEXT,"
+                + "jumlah_tiket INTEGER,"
+                + "tanggal TEXT" + ")")
+        db.execSQL(createTableTiket)
     }
     
-    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        db?.execSQL("DROP TABLE IF EXISTS $TABLE_MAHASISWA")
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MAHASISWA)
+        db.execSQL("DROP TABLE IF EXISTS pesanan_tiket")
         onCreate(db)
     }
     
-    // Tambah data
+    // CRUD Methods for Mahasiswa
     fun tambahData(mahasiswa: Mahasiswa): Long {
-        val db = writableDatabase
-        val values = ContentValues().apply {
-            put(COLUMN_NIM, mahasiswa.nim)
-            put(COLUMN_NAMA, mahasiswa.nama)
-        }
-        return db.insert(TABLE_MAHASISWA, null, values)
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(COLUMN_NIM, mahasiswa.nim)
+        contentValues.put(COLUMN_NAMA, mahasiswa.nama)
+        return db.insert(TABLE_MAHASISWA, null, contentValues)
+    }
+    
+    // CRUD Methods for Tiket
+    fun tambahPesananTiket(nama: String, jumlah: Int, tanggal: String): Long {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put("nama_pemesan", nama)
+        contentValues.put("jumlah_tiket", jumlah)
+        contentValues.put("tanggal", tanggal)
+        return db.insert("pesanan_tiket", null, contentValues)
     }
     
     // Baca semua data

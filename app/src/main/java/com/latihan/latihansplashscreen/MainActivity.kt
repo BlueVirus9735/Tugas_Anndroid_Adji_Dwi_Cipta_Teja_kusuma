@@ -42,6 +42,10 @@ class MainActivity : AppCompatActivity() {
                     loadFragment(DataFragment())
                     true
                 }
+                R.id.nav_ticket -> {
+                    loadFragment(TicketFragment())
+                    true
+                }
                 R.id.nav_profile -> {
                     loadFragment(ProfileFragment())
                     true
@@ -54,6 +58,39 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             loadFragment(HomeFragment())
         }
+        
+        handleNotificationIntent()
+    }
+    
+    // Handle notification click
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleNotificationIntent()
+    }
+    
+    private fun handleNotificationIntent() {
+        val showDialog = intent.getBooleanExtra("show_dialog", false)
+        if (showDialog) {
+            val nama = intent.getStringExtra("nama_pemesan") ?: "-"
+            val jumlah = intent.getIntExtra("jumlah_tiket", 0)
+            
+            showTicketDialog(nama, jumlah)
+            
+            // Clear extras to prevent dialog from showing again on rotation
+            intent.removeExtra("show_dialog")
+        }
+    }
+    
+    private fun showTicketDialog(nama: String, jumlah: Int) {
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Detail Pesanan")
+            .setMessage("Nama: $nama\nJumlah Tiket: $jumlah\n\nStatus: Berhasil Dipesan")
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setCancelable(false)
+            .show()
     }
     
     private fun loadFragment(fragment: Fragment) {
