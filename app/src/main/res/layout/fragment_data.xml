@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Kelola data mahasiswa (CRUD)"
+            android:text="Kelola data mahasiswa"
             android:textColor="#E0E0E0"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="@id/tv_title"

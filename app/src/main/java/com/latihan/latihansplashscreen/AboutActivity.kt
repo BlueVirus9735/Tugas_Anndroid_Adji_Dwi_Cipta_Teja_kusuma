@@ -8,11 +8,9 @@ class AboutActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
-        
-        // Hide ActionBar as we use custom header
+
         supportActionBar?.hide()
-        
-        // Animations
+
         val cardAbout = findViewById<View>(R.id.card_about)
         val tvTitle = findViewById<View>(R.id.tv_title)
         val tvSubtitle = findViewById<View>(R.id.tv_subtitle)

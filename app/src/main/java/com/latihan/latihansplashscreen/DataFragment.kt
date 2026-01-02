@@ -37,37 +37,31 @@ class DataFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         databaseHelper = DatabaseHelper(requireContext())
-        
-        // Init Views
+
         etNim = view.findViewById(R.id.et_nim)
         etNama = view.findViewById(R.id.et_nama)
         etJurusan = view.findViewById(R.id.et_jurusan)
         etSemester = view.findViewById(R.id.et_semester)
         btnTambah = view.findViewById(R.id.btn_tambah)
         lvMahasiswa = view.findViewById(R.id.lv_mahasiswa)
-        
-        // Animation References
+
         val cardInput = view.findViewById<View>(R.id.card_input)
         val cardResult = view.findViewById<View>(R.id.card_result)
-        
-        // Setup simple animations
+
         cardInput.alpha = 0f
         cardInput.translationY = 50f
         cardResult.alpha = 0f
         cardResult.translationY = 50f
         cardInput.animate().alpha(1f).translationY(0f).setDuration(500).start()
         cardResult.animate().alpha(1f).translationY(0f).setDuration(500).setStartDelay(100).start()
-        
-        // Listeners
+
         btnTambah.setOnClickListener { tambahData() }
-        
-        // Setup ListView Click
+
         lvMahasiswa.setOnItemClickListener { _, _, position, _ ->
             val selectedMahasiswa = mahasiswaList[position]
             showEditDialog(selectedMahasiswa)
         }
-        
-        // Load Data
+
         refreshList()
     }
     
@@ -103,8 +97,7 @@ class DataFragment : Fragment() {
         val etDialogNama = dialogView.findViewById<TextInputEditText>(R.id.et_dialog_nama)
         val etDialogJurusan = dialogView.findViewById<TextInputEditText>(R.id.et_dialog_jurusan)
         val etDialogSemester = dialogView.findViewById<TextInputEditText>(R.id.et_dialog_semester)
-        
-        // Set values
+
         etDialogNim.setText(mahasiswa.nim)
         etDialogNama.setText(mahasiswa.nama)
         etDialogJurusan.setText(mahasiswa.jurusan)
@@ -113,7 +106,7 @@ class DataFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setView(dialogView)
             .setPositiveButton("Simpan") { _, _ ->
-                // Update Logic
+
                 val baruNama = etDialogNama.text.toString().trim()
                 val baruJurusan = etDialogJurusan.text.toString().trim()
                 val baruSemester = etDialogSemester.text.toString().trim().toIntOrNull() ?: 1
@@ -126,7 +119,7 @@ class DataFragment : Fragment() {
                 }
             }
             .setNegativeButton("Hapus") { _, _ ->
-                // Delete Logic
+
                 databaseHelper.hapusData(mahasiswa.nim)
                 refreshList()
                 Toast.makeText(requireContext(), "Data dihapus", Toast.LENGTH_SHORT).show()

@@ -24,8 +24,7 @@ class LoginActivity : AppCompatActivity() {
         usernameInput = findViewById(R.id.username_input)
         passwordInput = findViewById(R.id.password_input)
         loginBtn = findViewById(R.id.login_btn)
-        
-        // Animations
+
         val cardLogin = findViewById<View>(R.id.card_login)
         val logoLogin = findViewById<View>(R.id.logo_login)
         val tvAppName = findViewById<View>(R.id.tv_app_name)

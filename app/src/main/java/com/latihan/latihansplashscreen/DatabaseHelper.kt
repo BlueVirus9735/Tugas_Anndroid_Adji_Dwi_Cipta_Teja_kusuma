@@ -18,12 +18,12 @@ class DatabaseHelper(context: Context) :
     
     companion object {
         private const val DATABASE_NAME = "mahasiswa.db"
-        private const val DATABASE_VERSION = 3 // Upgraded to v3
+        private const val DATABASE_VERSION = 3
         private const val TABLE_MAHASISWA = "mahasiswa"
         private const val COLUMN_NIM = "nim"
         private const val COLUMN_NAMA = "nama"
-        private const val COLUMN_JURUSAN = "jurusan" // New Column
-        private const val COLUMN_SEMESTER = "semester" // New Column
+        private const val COLUMN_JURUSAN = "jurusan"
+        private const val COLUMN_SEMESTER = "semester"
     }
     
     override fun onCreate(db: SQLiteDatabase) {
@@ -33,8 +33,7 @@ class DatabaseHelper(context: Context) :
                 + COLUMN_JURUSAN + " TEXT,"
                 + COLUMN_SEMESTER + " INTEGER" + ")")
         db.execSQL(createTableMahasiswa)
-        
-        // Buat tabel pesanan tiket
+
         val createTableTiket = ("CREATE TABLE pesanan_tiket ("
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "nama_pemesan TEXT,"
@@ -48,8 +47,7 @@ class DatabaseHelper(context: Context) :
         db.execSQL("DROP TABLE IF EXISTS pesanan_tiket")
         onCreate(db)
     }
-    
-    // CRUD Methods for Mahasiswa
+
     fun tambahData(mahasiswa: Mahasiswa): Long {
         val db = this.writableDatabase
         val contentValues = ContentValues()
@@ -59,8 +57,7 @@ class DatabaseHelper(context: Context) :
         contentValues.put(COLUMN_SEMESTER, mahasiswa.semester)
         return db.insert(TABLE_MAHASISWA, null, contentValues)
     }
-    
-    // CRUD Methods for Tiket
+
     fun tambahPesananTiket(nama: String, jumlah: Int, tanggal: String): Long {
         val db = this.writableDatabase
         val contentValues = ContentValues()
@@ -69,8 +66,7 @@ class DatabaseHelper(context: Context) :
         contentValues.put("tanggal", tanggal)
         return db.insert("pesanan_tiket", null, contentValues)
     }
-    
-    // Baca semua data
+
     fun bacaSemuaData(): List<Mahasiswa> {
         val mahasiswaList = mutableListOf<Mahasiswa>()
         val db = readableDatabase
@@ -92,8 +88,7 @@ class DatabaseHelper(context: Context) :
         }
         return mahasiswaList
     }
-    
-    // Update data
+
     fun ubahData(mahasiswa: Mahasiswa): Int {
         val db = writableDatabase
         val values = ContentValues().apply {
@@ -108,8 +103,7 @@ class DatabaseHelper(context: Context) :
             arrayOf(mahasiswa.nim)
         )
     }
-    
-    // Cari data berdasarkan NIM
+
     fun cariDataByNim(nim: String): Mahasiswa? {
         val db = readableDatabase
         val cursor = db.query(
@@ -130,8 +124,7 @@ class DatabaseHelper(context: Context) :
         cursor.close()
         return mahasiswa
     }
-    
-    // Hapus data
+   
     fun hapusData(nim: String): Int {
         val db = writableDatabase
         return db.delete(TABLE_MAHASISWA, "$COLUMN_NIM = ?", arrayOf(nim))

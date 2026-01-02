@@ -13,8 +13,7 @@ class SessionManager(context: Context) {
         private const val KEY_USERNAME = "username"
         private const val KEY_IS_DARK_MODE = "is_dark_mode"
     }
-    
-    // Login functions
+
     fun saveLoginSession(username: String) {
         val editor = prefs.edit()
         editor.putBoolean(KEY_IS_LOGIN, true)
@@ -36,8 +35,7 @@ class SessionManager(context: Context) {
         editor.remove(KEY_USERNAME)
         editor.apply()
     }
-    
-    // Dark mode functions
+
     fun saveDarkMode(isDarkMode: Boolean) {
         val editor = prefs.edit()
         editor.putBoolean(KEY_IS_DARK_MODE, isDarkMode)

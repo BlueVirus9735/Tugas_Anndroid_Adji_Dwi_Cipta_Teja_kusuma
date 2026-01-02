@@ -58,8 +58,7 @@ class TicketFragment : Fragment() {
         val tvSubtitle = view.findViewById<View>(R.id.tv_subtitle)
 
         createNotificationChannel()
-        
-        // Entrance Animation
+
         cardForm.alpha = 0f
         cardForm.translationY = 100f
         cardForm.animate().alpha(1f).translationY(0f).setDuration(500).setStartDelay(100).start()
@@ -96,7 +95,6 @@ class TicketFragment : Fragment() {
             return
         }
 
-        // Cek Permission Notifikasi untuk Android 13+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
                     requireContext(),
@@ -112,13 +110,11 @@ class TicketFragment : Fragment() {
             }
         }
 
-        // Tampilkan Loading
         val progressDialog = ProgressDialog(requireContext())
         progressDialog.setMessage("Sedang memproses pesanan...")
         progressDialog.setCancelable(false)
         progressDialog.show()
 
-        // Simulasi proses 2 detik
         Handler(Looper.getMainLooper()).postDelayed({
             progressDialog.dismiss()
             simpanKeDatabase(nama, jumlah)
@@ -150,7 +146,7 @@ class TicketFragment : Fragment() {
         )
 
         val builder = NotificationCompat.Builder(requireContext(), CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_ticket) // Pastikan icon ada
+            .setSmallIcon(R.drawable.ic_ticket)
             .setContentTitle("Pesanan Berhasil")
             .setContentText("Tiket atas nama $nama berhasil dipesan")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -164,8 +160,7 @@ class TicketFragment : Fragment() {
         } catch (e: SecurityException) {
             Toast.makeText(requireContext(), "Gagal menampilkan notifikasi: Izin ditolak", Toast.LENGTH_SHORT).show()
         }
-        
-        // Cadangan jika notifikasi tidak muncul (misal di emulator lama tanpa Google Play Services update)
+
         Toast.makeText(requireContext(), "Tiket atas nama $nama berhasil dipesan!", Toast.LENGTH_LONG).show()
     }
 

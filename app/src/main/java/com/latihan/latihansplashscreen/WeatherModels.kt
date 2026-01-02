@@ -2,7 +2,6 @@ package com.latihan.latihansplashscreen
 
 import com.google.gson.annotations.SerializedName
 
-// Data class untuk response API cuaca
 data class WeatherResponse(
     @SerializedName("latitude")
     val latitude: Double,

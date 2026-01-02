@@ -16,18 +16,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        
-        // Initialize session manager
+
         sessionManager = SessionManager(this)
-        
-        // Initialize views
         bottomNavigationView = findViewById(R.id.bottom_navigation)
         mainLayout = findViewById(R.id.main)
-        
-        // Apply dark mode if enabled
+
         applyTheme()
-        
-        // Set up bottom navigation
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
@@ -53,16 +47,11 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
-        
-        // Load default fragment
         if (savedInstanceState == null) {
             loadFragment(HomeFragment())
         }
-        
         handleNotificationIntent()
     }
-    
-    // Handle notification click
     override fun onNewIntent(intent: android.content.Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
@@ -76,8 +65,6 @@ class MainActivity : AppCompatActivity() {
             val jumlah = intent.getIntExtra("jumlah_tiket", 0)
             
             showTicketDialog(nama, jumlah)
-            
-            // Clear extras to prevent dialog from showing again on rotation
             intent.removeExtra("show_dialog")
         }
     }
