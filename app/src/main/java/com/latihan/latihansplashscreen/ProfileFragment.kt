@@ -1,7 +1,6 @@
 package com.latihan.latihansplashscreen
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,69 +13,88 @@ import androidx.fragment.app.Fragment
 class ProfileFragment : Fragment() {
     
     private lateinit var sessionManager: SessionManager
-    private lateinit var textViewWelcome: TextView
-    private lateinit var switchModeGelap: SwitchCompat
-    private lateinit var buttonAbout: Button
-    private lateinit var buttonLogout: Button
+    private lateinit var tvUsernameHeader: TextView
+    private lateinit var tvUsername: TextView
+    private lateinit var switchDarkMode: SwitchCompat
+    private lateinit var btnAbout: Button
+    private lateinit var btnLogout: Button
     
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_profile, container, false)
+        return inflater.inflate(R.layout.fragment_profile, container, false)
+    }
+    
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         
         // Initialize session manager
         sessionManager = SessionManager(requireContext())
         
         // Initialize views
-        textViewWelcome = view.findViewById(R.id.text_view_welcome)
-        switchModeGelap = view.findViewById(R.id.switch_mode_gelap)
-        buttonAbout = view.findViewById(R.id.button_about)
-        buttonLogout = view.findViewById(R.id.button_logout)
+        tvUsernameHeader = view.findViewById(R.id.tv_username_header)
+        tvUsername = view.findViewById(R.id.tv_username)
+        switchDarkMode = view.findViewById(R.id.switch_dark_mode)
+        btnAbout = view.findViewById(R.id.btn_about)
+        btnLogout = view.findViewById(R.id.btn_logout)
         
-        // Set welcome message
+        // Animation References
+        val cvProfilePic = view.findViewById<View>(R.id.cv_profile_pic)
+        val cardInfo = view.findViewById<View>(R.id.card_info)
+        val cardSettings = view.findViewById<View>(R.id.card_settings)
+        val layoutActions = view.findViewById<View>(R.id.layout_actions)
+
+        // Reset positions
+        cvProfilePic.alpha = 0f
+        cvProfilePic.scaleX = 0.5f
+        cvProfilePic.scaleY = 0.5f
+        
+        cardInfo.alpha = 0f
+        cardInfo.translationY = 100f
+        
+        cardSettings.alpha = 0f
+        cardSettings.translationY = 100f
+        
+        layoutActions.alpha = 0f
+        layoutActions.translationY = 50f
+
+        // Animate
+        cvProfilePic.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(600).start()
+        tvUsernameHeader.animate().alpha(1f).setDuration(600).start()
+        
+        cardInfo.animate().alpha(1f).translationY(0f).setDuration(500).setStartDelay(100).start()
+        cardSettings.animate().alpha(1f).translationY(0f).setDuration(500).setStartDelay(200).start()
+        layoutActions.animate().alpha(1f).translationY(0f).setDuration(500).setStartDelay(300).start()
+        
+        // Set user data
         val username = sessionManager.getUsername()
-        textViewWelcome.text = "Selamat datang, $username!"
+        tvUsernameHeader.text = username
+        tvUsername.text = username
         
         // Set dark mode switch state
-        switchModeGelap.isChecked = sessionManager.isDarkMode()
-        
-        // Apply theme
-        applyTheme(view)
+        switchDarkMode.isChecked = sessionManager.isDarkMode()
         
         // Set dark mode switch listener
-        switchModeGelap.setOnCheckedChangeListener { _, isChecked ->
+        switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
             sessionManager.saveDarkMode(isChecked)
-            applyTheme(view)
-            // Update MainActivity theme
             (activity as? MainActivity)?.applyTheme()
         }
         
         // Set about button listener
-        buttonAbout.setOnClickListener {
+        btnAbout.setOnClickListener {
             val intent = Intent(requireActivity(), AboutActivity::class.java)
             startActivity(intent)
         }
         
         // Set logout button listener
-        buttonLogout.setOnClickListener {
+        btnLogout.setOnClickListener {
             sessionManager.logout()
             val intent = Intent(requireActivity(), LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             requireActivity().finish()
-        }
-        
-        return view
-    }
-    
-    private fun applyTheme(view: View) {
-        val isDarkMode = sessionManager.isDarkMode()
-        if (isDarkMode) {
-            textViewWelcome.setTextColor(Color.WHITE)
-        } else {
-            textViewWelcome.setTextColor(Color.BLACK)
         }
     }
 }

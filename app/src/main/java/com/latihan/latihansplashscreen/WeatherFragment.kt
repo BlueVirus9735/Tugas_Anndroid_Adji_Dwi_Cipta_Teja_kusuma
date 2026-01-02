@@ -1,6 +1,5 @@
 package com.latihan.latihansplashscreen
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,12 +15,11 @@ import retrofit2.Response
 
 class WeatherFragment : Fragment() {
     
-    private lateinit var sessionManager: SessionManager
-    private lateinit var textViewLocation: TextView
-    private lateinit var textViewTemperature: TextView
-    private lateinit var textViewHumidity: TextView
-    private lateinit var textViewWindSpeed: TextView
-    private lateinit var buttonGetWeather: Button
+    private lateinit var tvLocation: TextView
+    private lateinit var tvTemperature: TextView
+    private lateinit var tvHumidity: TextView
+    private lateinit var tvWindSpeed: TextView
+    private lateinit var btnRefresh: Button
     private lateinit var progressBar: ProgressBar
     
     override fun onCreateView(
@@ -29,28 +27,40 @@ class WeatherFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_weather, container, false)
-        
-        // Initialize session manager
-        sessionManager = SessionManager(requireContext())
+        return inflater.inflate(R.layout.fragment_weather, container, false)
+    }
+    
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         
         // Initialize views
-        textViewLocation = view.findViewById(R.id.text_view_location)
-        textViewTemperature = view.findViewById(R.id.text_view_temperature)
-        textViewHumidity = view.findViewById(R.id.text_view_humidity)
-        textViewWindSpeed = view.findViewById(R.id.text_view_wind_speed)
-        buttonGetWeather = view.findViewById(R.id.button_get_weather)
+        tvLocation = view.findViewById(R.id.tv_location)
+        tvTemperature = view.findViewById(R.id.tv_temperature)
+        tvHumidity = view.findViewById(R.id.tv_humidity)
+        tvWindSpeed = view.findViewById(R.id.tv_wind_speed)
+        btnRefresh = view.findViewById(R.id.btn_refresh)
         progressBar = view.findViewById(R.id.progress_bar)
         
-        // Apply theme
-        applyTheme(view)
+        // Animation References
+        val cardWeather = view.findViewById<View>(R.id.card_weather)
+        val tvTitle = view.findViewById<View>(R.id.tv_title)
+        
+        // Setup Animations
+        cardWeather.alpha = 0f
+        cardWeather.translationY = 100f
+        cardWeather.animate().alpha(1f).translationY(0f).setDuration(600).setStartDelay(200).start()
+        
+        tvTitle.alpha = 0f
+        tvTitle.translationY = -50f
+        tvTitle.animate().alpha(1f).translationY(0f).setDuration(500).start()
         
         // Set button click listener
-        buttonGetWeather.setOnClickListener {
+        btnRefresh.setOnClickListener {
             getWeatherData()
         }
         
-        return view
+        // Initial Fetch
+        getWeatherData()
     }
     
     private fun getWeatherData() {
@@ -59,7 +69,7 @@ class WeatherFragment : Fragment() {
         val longitude = 106.8456
         
         progressBar.visibility = View.VISIBLE
-        buttonGetWeather.isEnabled = false
+        btnRefresh.isEnabled = false
         
         val call = RetrofitClient.weatherApiService.getCurrentWeather(latitude, longitude)
         
@@ -68,50 +78,31 @@ class WeatherFragment : Fragment() {
                 call: Call<WeatherResponse>,
                 response: Response<WeatherResponse>
             ) {
+                if (!isAdded) return // Check if fragment is still attached
+                
                 progressBar.visibility = View.GONE
-                buttonGetWeather.isEnabled = true
+                btnRefresh.isEnabled = true
                 
                 if (response.isSuccessful) {
                     val weather = response.body()
                     weather?.let {
-                        textViewLocation.text = "Jakarta, Indonesia"
-                        textViewTemperature.text = "Suhu: ${it.current.temperature}°C"
-                        textViewHumidity.text = "Kelembaban: ${it.current.humidity}%"
-                        textViewWindSpeed.text = "Kecepatan Angin: ${it.current.windSpeed} km/h"
+                        tvLocation.text = "Jakarta"
+                        tvTemperature.text = "${it.current.temperature}°C"
+                        tvHumidity.text = "${it.current.humidity}%"
+                        tvWindSpeed.text = "${it.current.windSpeed} km/h"
                     }
                 } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Gagal mengambil data cuaca",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(context, "Gagal mengambil data", Toast.LENGTH_SHORT).show()
                 }
             }
             
             override fun onFailure(call: Call<WeatherResponse>, t: Throwable) {
+                if (!isAdded) return
+                
                 progressBar.visibility = View.GONE
-                buttonGetWeather.isEnabled = true
-                Toast.makeText(
-                    requireContext(),
-                    "Error: ${t.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                btnRefresh.isEnabled = true
+                Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
-    }
-    
-    private fun applyTheme(view: View) {
-        val isDarkMode = sessionManager.isDarkMode()
-        if (isDarkMode) {
-            textViewLocation.setTextColor(Color.WHITE)
-            textViewTemperature.setTextColor(Color.WHITE)
-            textViewHumidity.setTextColor(Color.WHITE)
-            textViewWindSpeed.setTextColor(Color.WHITE)
-        } else {
-            textViewLocation.setTextColor(Color.BLACK)
-            textViewTemperature.setTextColor(Color.BLACK)
-            textViewHumidity.setTextColor(Color.BLACK)
-            textViewWindSpeed.setTextColor(Color.BLACK)
-        }
     }
 }

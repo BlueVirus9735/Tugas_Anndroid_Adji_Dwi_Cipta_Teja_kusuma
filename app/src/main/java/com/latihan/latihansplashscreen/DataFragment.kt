@@ -1,169 +1,156 @@
 package com.latihan.latihansplashscreen
 
-import android.graphics.Color
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
+import android.widget.ListView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.google.android.material.textfield.TextInputEditText
 
 class DataFragment : Fragment() {
     
-    private lateinit var sessionManager: SessionManager
     private lateinit var databaseHelper: DatabaseHelper
-    private lateinit var editTextNim: EditText
-    private lateinit var editTextNama: EditText
-    private lateinit var buttonTambahData: Button
-    private lateinit var buttonUbahData: Button
-    private lateinit var buttonCariData: Button
-    private lateinit var buttonHapusData: Button
-    private lateinit var textViewHasilData: TextView
+    private lateinit var etNim: TextInputEditText
+    private lateinit var etNama: TextInputEditText
+    private lateinit var etJurusan: TextInputEditText
+    private lateinit var etSemester: TextInputEditText
+    private lateinit var btnTambah: Button
+    private lateinit var lvMahasiswa: ListView
+    
+    private lateinit var listAdapter: ArrayAdapter<String>
+    private var mahasiswaList: List<Mahasiswa> = ArrayList()
     
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_data, container, false)
-        
-        // Initialize helpers
-        sessionManager = SessionManager(requireContext())
+        return inflater.inflate(R.layout.fragment_data, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         databaseHelper = DatabaseHelper(requireContext())
         
-        // Initialize views
-        editTextNim = view.findViewById(R.id.edit_text_nim)
-        editTextNama = view.findViewById(R.id.edit_text_nama)
-        buttonTambahData = view.findViewById(R.id.button_tambah_data)
-        buttonUbahData = view.findViewById(R.id.button_ubah_data)
-        buttonCariData = view.findViewById(R.id.button_cari_data)
-        buttonHapusData = view.findViewById(R.id.button_hapus_data)
-        textViewHasilData = view.findViewById(R.id.text_view_hasil_data)
+        // Init Views
+        etNim = view.findViewById(R.id.et_nim)
+        etNama = view.findViewById(R.id.et_nama)
+        etJurusan = view.findViewById(R.id.et_jurusan)
+        etSemester = view.findViewById(R.id.et_semester)
+        btnTambah = view.findViewById(R.id.btn_tambah)
+        lvMahasiswa = view.findViewById(R.id.lv_mahasiswa)
         
-        // Apply theme
-        applyTheme(view)
+        // Animation References
+        val cardInput = view.findViewById<View>(R.id.card_input)
+        val cardResult = view.findViewById<View>(R.id.card_result)
         
-        // Set button listeners
-        buttonTambahData.setOnClickListener { tambahData() }
-        buttonUbahData.setOnClickListener { ubahData() }
-        buttonCariData.setOnClickListener { cariData() }
-        buttonHapusData.setOnClickListener { hapusData() }
+        // Setup simple animations
+        cardInput.alpha = 0f
+        cardInput.translationY = 50f
+        cardResult.alpha = 0f
+        cardResult.translationY = 50f
+        cardInput.animate().alpha(1f).translationY(0f).setDuration(500).start()
+        cardResult.animate().alpha(1f).translationY(0f).setDuration(500).setStartDelay(100).start()
         
-        // Load all data initially
-        tampilkanSemuaData()
+        // Listeners
+        btnTambah.setOnClickListener { tambahData() }
         
-        return view
+        // Setup ListView Click
+        lvMahasiswa.setOnItemClickListener { _, _, position, _ ->
+            val selectedMahasiswa = mahasiswaList[position]
+            showEditDialog(selectedMahasiswa)
+        }
+        
+        // Load Data
+        refreshList()
     }
     
     private fun tambahData() {
-        val nim = editTextNim.text.toString().trim()
-        val nama = editTextNama.text.toString().trim()
+        val nim = etNim.text.toString().trim()
+        val nama = etNama.text.toString().trim()
+        val jurusan = etJurusan.text.toString().trim()
+        val semesterStr = etSemester.text.toString().trim()
         
-        if (nim.isEmpty() || nama.isEmpty()) {
-            Toast.makeText(requireContext(), "NIM dan Nama harus diisi!", Toast.LENGTH_SHORT).show()
+        if (nim.isEmpty() || nama.isEmpty() || jurusan.isEmpty() || semesterStr.isEmpty()) {
+            Toast.makeText(requireContext(), "Semua data harus diisi!", Toast.LENGTH_SHORT).show()
             return
         }
         
-        val mahasiswa = Mahasiswa(nim, nama)
+        val semester = semesterStr.toIntOrNull() ?: 1
+        
+        val mahasiswa = Mahasiswa(nim, nama, jurusan, semester)
         val result = databaseHelper.tambahData(mahasiswa)
         
         if (result > 0) {
-            Toast.makeText(requireContext(), "Data berhasil ditambahkan", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Data berhasil disimpan!", Toast.LENGTH_SHORT).show()
             clearInputs()
-            tampilkanSemuaData()
+            refreshList()
         } else {
-            Toast.makeText(requireContext(), "Gagal menambahkan data", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Gagal simpan (NIM mungkin duplikat)", Toast.LENGTH_SHORT).show()
         }
     }
     
-    private fun ubahData() {
-        val nim = editTextNim.text.toString().trim()
-        val nama = editTextNama.text.toString().trim()
+    private fun showEditDialog(mahasiswa: Mahasiswa) {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_edit_data, null)
         
-        if (nim.isEmpty() || nama.isEmpty()) {
-            Toast.makeText(requireContext(), "NIM dan Nama harus diisi!", Toast.LENGTH_SHORT).show()
-            return
-        }
+        val etDialogNim = dialogView.findViewById<TextInputEditText>(R.id.et_dialog_nim)
+        val etDialogNama = dialogView.findViewById<TextInputEditText>(R.id.et_dialog_nama)
+        val etDialogJurusan = dialogView.findViewById<TextInputEditText>(R.id.et_dialog_jurusan)
+        val etDialogSemester = dialogView.findViewById<TextInputEditText>(R.id.et_dialog_semester)
         
-        val mahasiswa = Mahasiswa(nim, nama)
-        val result = databaseHelper.ubahData(mahasiswa)
+        // Set values
+        etDialogNim.setText(mahasiswa.nim)
+        etDialogNama.setText(mahasiswa.nama)
+        etDialogJurusan.setText(mahasiswa.jurusan)
+        etDialogSemester.setText(mahasiswa.semester.toString())
         
-        if (result > 0) {
-            Toast.makeText(requireContext(), "Data berhasil diubah", Toast.LENGTH_SHORT).show()
-            clearInputs()
-            tampilkanSemuaData()
-        } else {
-            Toast.makeText(requireContext(), "Data tidak ditemukan", Toast.LENGTH_SHORT).show()
-        }
-    }
-    
-    private fun cariData() {
-        val nim = editTextNim.text.toString().trim()
-        
-        if (nim.isEmpty()) {
-            Toast.makeText(requireContext(), "NIM harus diisi!", Toast.LENGTH_SHORT).show()
-            return
-        }
-        
-        val mahasiswa = databaseHelper.cariDataByNim(nim)
-        
-        if (mahasiswa != null) {
-            editTextNama.setText(mahasiswa.nama)
-            textViewHasilData.text = "Data ditemukan:\nNIM: ${mahasiswa.nim}\nNama: ${mahasiswa.nama}"
-        } else {
-            Toast.makeText(requireContext(), "Data tidak ditemukan", Toast.LENGTH_SHORT).show()
-        }
-    }
-    
-    private fun hapusData() {
-        val nim = editTextNim.text.toString().trim()
-        
-        if (nim.isEmpty()) {
-            Toast.makeText(requireContext(), "NIM harus diisi!", Toast.LENGTH_SHORT).show()
-            return
-        }
-        
-        val result = databaseHelper.hapusData(nim)
-        
-        if (result > 0) {
-            Toast.makeText(requireContext(), "Data berhasil dihapus", Toast.LENGTH_SHORT).show()
-            clearInputs()
-            tampilkanSemuaData()
-        } else {
-            Toast.makeText(requireContext(), "Data tidak ditemukan", Toast.LENGTH_SHORT).show()
-        }
-    }
-    
-    private fun tampilkanSemuaData() {
-        val mahasiswaList = databaseHelper.bacaSemuaData()
-        
-        if (mahasiswaList.isEmpty()) {
-            textViewHasilData.text = "Belum ada data mahasiswa"
-        } else {
-            val sb = StringBuilder("Daftar Mahasiswa:\n\n")
-            mahasiswaList.forEach { mahasiswa ->
-                sb.append("NIM: ${mahasiswa.nim}\n")
-                sb.append("Nama: ${mahasiswa.nama}\n")
-                sb.append("---\n")
+        AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .setPositiveButton("Simpan") { _, _ ->
+                // Update Logic
+                val baruNama = etDialogNama.text.toString().trim()
+                val baruJurusan = etDialogJurusan.text.toString().trim()
+                val baruSemester = etDialogSemester.text.toString().trim().toIntOrNull() ?: 1
+                
+                if (baruNama.isNotEmpty()) {
+                    val updatedMahasiswa = Mahasiswa(mahasiswa.nim, baruNama, baruJurusan, baruSemester)
+                    databaseHelper.ubahData(updatedMahasiswa)
+                    refreshList()
+                    Toast.makeText(requireContext(), "Data diperbarui", Toast.LENGTH_SHORT).show()
+                }
             }
-            textViewHasilData.text = sb.toString()
+            .setNegativeButton("Hapus") { _, _ ->
+                // Delete Logic
+                databaseHelper.hapusData(mahasiswa.nim)
+                refreshList()
+                Toast.makeText(requireContext(), "Data dihapus", Toast.LENGTH_SHORT).show()
+            }
+            .setNeutralButton("Batal", null)
+            .show()
+    }
+    
+    private fun refreshList() {
+        mahasiswaList = databaseHelper.bacaSemuaData()
+        
+        val displayList = mahasiswaList.map { 
+            "${it.nama} (${it.jurusan} - Sem ${it.semester})\nNIM: ${it.nim}" 
         }
+        
+        listAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, displayList)
+        lvMahasiswa.adapter = listAdapter
     }
     
     private fun clearInputs() {
-        editTextNim.text.clear()
-        editTextNama.text.clear()
-    }
-    
-    private fun applyTheme(view: View) {
-        val isDarkMode = sessionManager.isDarkMode()
-        if (isDarkMode) {
-            textViewHasilData.setTextColor(Color.WHITE)
-        } else {
-            textViewHasilData.setTextColor(Color.BLACK)
-        }
+        etNim.text?.clear()
+        etNama.text?.clear()
+        etJurusan.text?.clear()
+        etSemester.text?.clear()
+        etNim.requestFocus()
     }
 }

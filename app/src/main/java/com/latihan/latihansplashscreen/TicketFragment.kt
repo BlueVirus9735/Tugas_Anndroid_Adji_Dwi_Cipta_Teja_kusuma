@@ -53,8 +53,23 @@ class TicketFragment : Fragment() {
         etNama = view.findViewById(R.id.et_nama_pemesan)
         etJumlah = view.findViewById(R.id.et_jumlah_tiket)
         btnPesan = view.findViewById(R.id.btn_pesan_tiket)
+        val cardForm = view.findViewById<View>(R.id.card_form)
+        val tvTitle = view.findViewById<View>(R.id.tv_title)
+        val tvSubtitle = view.findViewById<View>(R.id.tv_subtitle)
 
         createNotificationChannel()
+        
+        // Entrance Animation
+        cardForm.alpha = 0f
+        cardForm.translationY = 100f
+        cardForm.animate().alpha(1f).translationY(0f).setDuration(500).setStartDelay(100).start()
+        
+        tvTitle.alpha = 0f
+        tvTitle.translationY = -50f
+        tvTitle.animate().alpha(1f).translationY(0f).setDuration(500).start()
+        
+        tvSubtitle.alpha = 0f
+        tvSubtitle.animate().alpha(1f).setDuration(500).setStartDelay(200).start()
 
         btnPesan.setOnClickListener {
             handlePesanTiket()

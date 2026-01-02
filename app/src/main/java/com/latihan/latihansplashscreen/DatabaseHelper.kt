@@ -8,7 +8,9 @@ import android.database.sqlite.SQLiteOpenHelper
 
 data class Mahasiswa(
     val nim: String,
-    val nama: String
+    val nama: String,
+    val jurusan: String,
+    val semester: Int
 )
 
 class DatabaseHelper(context: Context) : 
@@ -16,15 +18,20 @@ class DatabaseHelper(context: Context) :
     
     companion object {
         private const val DATABASE_NAME = "mahasiswa.db"
-        private const val DATABASE_VERSION = 2
+        private const val DATABASE_VERSION = 3 // Upgraded to v3
         private const val TABLE_MAHASISWA = "mahasiswa"
         private const val COLUMN_NIM = "nim"
         private const val COLUMN_NAMA = "nama"
+        private const val COLUMN_JURUSAN = "jurusan" // New Column
+        private const val COLUMN_SEMESTER = "semester" // New Column
     }
     
     override fun onCreate(db: SQLiteDatabase) {
         val createTableMahasiswa = ("CREATE TABLE " + TABLE_MAHASISWA + "("
-                + COLUMN_NIM + " TEXT PRIMARY KEY," + COLUMN_NAMA + " TEXT" + ")")
+                + COLUMN_NIM + " TEXT PRIMARY KEY," 
+                + COLUMN_NAMA + " TEXT,"
+                + COLUMN_JURUSAN + " TEXT,"
+                + COLUMN_SEMESTER + " INTEGER" + ")")
         db.execSQL(createTableMahasiswa)
         
         // Buat tabel pesanan tiket
@@ -48,6 +55,8 @@ class DatabaseHelper(context: Context) :
         val contentValues = ContentValues()
         contentValues.put(COLUMN_NIM, mahasiswa.nim)
         contentValues.put(COLUMN_NAMA, mahasiswa.nama)
+        contentValues.put(COLUMN_JURUSAN, mahasiswa.jurusan)
+        contentValues.put(COLUMN_SEMESTER, mahasiswa.semester)
         return db.insert(TABLE_MAHASISWA, null, contentValues)
     }
     
@@ -67,7 +76,7 @@ class DatabaseHelper(context: Context) :
         val db = readableDatabase
         val cursor: Cursor = db.query(
             TABLE_MAHASISWA,
-            arrayOf(COLUMN_NIM, COLUMN_NAMA),
+            arrayOf(COLUMN_NIM, COLUMN_NAMA, COLUMN_JURUSAN, COLUMN_SEMESTER),
             null, null, null, null, null
         )
         
@@ -75,7 +84,9 @@ class DatabaseHelper(context: Context) :
             while (moveToNext()) {
                 val nim = getString(getColumnIndexOrThrow(COLUMN_NIM))
                 val nama = getString(getColumnIndexOrThrow(COLUMN_NAMA))
-                mahasiswaList.add(Mahasiswa(nim, nama))
+                val jurusan = getString(getColumnIndexOrThrow(COLUMN_JURUSAN))
+                val semester = getInt(getColumnIndexOrThrow(COLUMN_SEMESTER))
+                mahasiswaList.add(Mahasiswa(nim, nama, jurusan, semester))
             }
             close()
         }
@@ -87,6 +98,8 @@ class DatabaseHelper(context: Context) :
         val db = writableDatabase
         val values = ContentValues().apply {
             put(COLUMN_NAMA, mahasiswa.nama)
+            put(COLUMN_JURUSAN, mahasiswa.jurusan)
+            put(COLUMN_SEMESTER, mahasiswa.semester)
         }
         return db.update(
             TABLE_MAHASISWA,
@@ -101,7 +114,7 @@ class DatabaseHelper(context: Context) :
         val db = readableDatabase
         val cursor = db.query(
             TABLE_MAHASISWA,
-            arrayOf(COLUMN_NIM, COLUMN_NAMA),
+            arrayOf(COLUMN_NIM, COLUMN_NAMA, COLUMN_JURUSAN, COLUMN_SEMESTER),
             "$COLUMN_NIM = ?",
             arrayOf(nim),
             null, null, null
@@ -110,7 +123,9 @@ class DatabaseHelper(context: Context) :
         var mahasiswa: Mahasiswa? = null
         if (cursor.moveToFirst()) {
             val nama = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAMA))
-            mahasiswa = Mahasiswa(nim, nama)
+            val jurusan = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_JURUSAN))
+            val semester = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SEMESTER))
+            mahasiswa = Mahasiswa(nim, nama, jurusan, semester)
         }
         cursor.close()
         return mahasiswa
