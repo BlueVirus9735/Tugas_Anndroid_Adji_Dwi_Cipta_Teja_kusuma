@@ -33,7 +33,11 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_data -> {
-                    loadFragment(DataFragment())
+                    loadFragment(DataContainerFragment())
+                    true
+                }
+                R.id.nav_maps -> {
+                    loadFragment(MapsFragment())
                     true
                 }
                 R.id.nav_ticket -> {

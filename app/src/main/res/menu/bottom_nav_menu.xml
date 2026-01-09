@@ -12,6 +12,11 @@
         android:id="@+id/nav_data"
         android:title="Data"
         android:icon="@android:drawable/ic_menu_save" />
+    
+    <item
+        android:id="@+id/nav_maps"
+        android:title="Maps"
+        android:icon="@android:drawable/ic_dialog_map" />
 
     <item
         android:id="@+id/nav_ticket"
